@@ -1,7 +1,8 @@
 module Main exposing (..)
 
+-- based on example from http://package.elm-lang.org/packages/elm-lang/core/latest/Task#perform
+
 import Time exposing (Time)
-import Html.App as App
 import Html exposing (..)
 import Html.Events exposing (onClick)
 import Task
@@ -11,8 +12,8 @@ import Task
 
 
 type Msg
-    = GetTheTime
-    | GotTheTime Time
+    = GetTime
+    | NewTime Time
 
 
 
@@ -40,7 +41,7 @@ view model =
                     text <| toString theTime
     in
         div []
-            [ button [ onClick GetTheTime ] [ text "get it" ]
+            [ button [ onClick GetTime ] [ text "get time" ]
             , currentTime
             ]
 
@@ -52,16 +53,16 @@ view model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GetTheTime ->
-            model ! [ Task.perform GotTheTime GotTheTime (Time.now) ]
+        GetTime ->
+            model ! [ Task.perform NewTime Time.now ]
 
-        GotTheTime time ->
+        NewTime time ->
             { model | currentTime = Just time } ! []
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
-    App.program
+    program
         { init = init
         , update = update
         , view = view
